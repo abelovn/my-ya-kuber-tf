@@ -29,6 +29,7 @@ resource "yandex_compute_instance" "control_plane" {
   network_interface {
     subnet_id = yandex_vpc_subnet.k8s_subnet.id
     nat       = true
+    security_group_ids = [yandex_vpc_security_group.control_plane_sg.id]
   }
 
   metadata = {
@@ -56,6 +57,7 @@ resource "yandex_compute_instance" "worker_node" {
   network_interface {
     subnet_id = yandex_vpc_subnet.k8s_subnet.id
     nat       = true
+    security_group_ids = [yandex_vpc_security_group.worker_node_sg.id]
   }
 
   metadata = {
