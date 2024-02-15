@@ -20,7 +20,7 @@ resource "local_file" "ansible_config" {
   file_permission = 0644
   content = templatefile("./ansible.cfg.tftpl",
     {
-      control_plane_nat_ip_address = yandex_compute_instance.control_plane[0].network_interface[0].nat_ip_address
+      control_plane_nat_ip_address = yandex_compute_instance.control_plane.network_interface[0].nat_ip_address
     }
   )
 }
