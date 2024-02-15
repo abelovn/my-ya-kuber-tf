@@ -1,0 +1,14 @@
+[control_plane]
+%{ for index_control_plane, control_plane_ip in control_plane_ip_address_list ~}
+${control_plane_vm_names[index_control_plane]}        ansible_host=${control_plane_ip}
+%{ endfor ~}
+
+[worker_node]
+%{ for index_worker_node, worker_node_ip in worker_node_ip_address_list ~}
+${worker_node_vm_names[index_worker_node]}       ansible_host=${worker_node_ip}
+%{ endfor ~}
+
+
+[all:vars]
+public_ip=${control_plane_nat_ip_address_list[0]}
+ansible_user=ubuntu
