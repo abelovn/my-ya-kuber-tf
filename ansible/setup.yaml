@@ -1,0 +1,30 @@
+---
+- name: Install and configure control-plane, worker-nodes
+  hosts: all
+  become: true
+
+  vars:
+    control_plane_packages:
+    - wget
+    - curl
+    worker_node_packages:
+    - curl 
+
+
+  tasks:
+  - name: Disable auto updates on Ubuntu
+    ansible.builtin.copy:
+      dest: /etc/apt/apt.conf.d/20auto-upgrades
+      content: |
+        APT::Periodic::Update-Package-Lists "0";
+        APT::Periodic::Unattended-Upgrade "0";
+    when: ansible_distribution == 'Ubuntu'
+
+  - name: Install and configure Control-plane
+    include_tasks: "control_plane.yaml"
+    when: inventory_hostname in groups["control_plane"]
+
+  - name: Install and configure Worker-node
+    include_tasks: "worker_node.yaml"
+    when: inventory_hostname in groups["worker_node"]
+
