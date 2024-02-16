@@ -33,3 +33,13 @@ resource "yandex_vpc_security_group_rule" "nodeport_services_udp" {
   to_port                = 32767
   v4_cidr_blocks         = ["0.0.0.0/0"]
 }
+
+resource "yandex_vpc_security_group_rule" "worker_node_ssh" {
+  security_group_binding = yandex_vpc_security_group.worker_node_sg.id
+  direction              = "ingress"
+  description            = "SSH"
+  protocol               = "tcp"
+  port                   = 22
+  v4_cidr_blocks         = ["0.0.0.0/0"]  # Consider restricting this to known IPs for better security
+}
+

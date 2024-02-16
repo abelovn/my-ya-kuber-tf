@@ -32,3 +32,13 @@ resource "yandex_vpc_security_group_rule" "control_plane_kubelet_api" {
   to_port                = 10250
   v4_cidr_blocks         = ["0.0.0.0/0"]
 }
+
+resource "yandex_vpc_security_group_rule" "control_plane_ssh" {
+  security_group_binding = yandex_vpc_security_group.control_plane_sg.id
+  direction              = "ingress"
+  description            = "SSH"
+  protocol               = "tcp"
+  port                   = 22
+  v4_cidr_blocks         = ["0.0.0.0/0"]  # Consider restricting this to known IPs for better security
+}
+
