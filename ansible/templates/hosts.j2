@@ -1,0 +1,12 @@
+# /etc/hosts
+127.0.0.1   localhost
+127.0.1.1   {{ ansible_hostname }}
+
+# Kubernetes Cluster Hosts
+{% for host in groups['master'] %}
+{{ hostvars[host]['ansible_host'] }} {{ host }}
+{% endfor %}
+{% for host in groups['worker'] %}
+{{ hostvars[host]['ansible_host'] }} {{ host }}
+{% endfor %}
+

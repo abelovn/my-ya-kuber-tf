@@ -7,13 +7,31 @@ resource "yandex_vpc_subnet" "k8s_subnet" {
   zone           = var.yc_zones
   network_id     = yandex_vpc_network.k8s_network.id
   v4_cidr_blocks = ["192.168.10.0/24"]
+  route_table_id = yandex_vpc_route_table.main_route_table.id
 }
 
 
-resource "yandex_compute_instance" "control_plane" {
-  name        = "control-plane"
+resource "yandex_vpc_gateway" "default_gateway" {
+  name = "default-gateway"
+  shared_egress_gateway {}
+}
+
+resource "yandex_vpc_route_table" "main_route_table" {
+  name       = "main-route-table"
+  network_id = yandex_vpc_network.k8s_network.id 
+
+  static_route {
+    destination_prefix = "0.0.0.0/0"
+    gateway_id         = yandex_vpc_gateway.default_gateway.id
+  }
+}
+
+
+
+resource "yandex_compute_instance" "master" {
+  name        = "master"
   zone        = var.yc_zones
-  hostname    = "control-plane"
+  hostname    = "master"
   platform_id = "standard-v2"
   resources {
     cores  = 2
@@ -29,19 +47,20 @@ resource "yandex_compute_instance" "control_plane" {
   network_interface {
     subnet_id = yandex_vpc_subnet.k8s_subnet.id
     nat       = true
-    security_group_ids = [yandex_vpc_security_group.control_plane_sg.id]
+    #security_group_ids = [yandex_vpc_security_group.master_sg.id]
   }
 
   metadata = {
     ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
+    user-data = "#cloud-config\nhostname: master"
   }
 }
 
-resource "yandex_compute_instance" "worker_node" {
+resource "yandex_compute_instance" "worker" {
   count       = 2
-  name        = "worker-node-${count.index}"
+  name        = "worker-${count.index}"
   zone        = var.yc_zones
-  hostname    = "worker-node-${count.index}"
+  hostname    = "worker-${count.index}"
   platform_id = "standard-v2"
   resources {
     cores  = 2
@@ -56,12 +75,13 @@ resource "yandex_compute_instance" "worker_node" {
 
   network_interface {
     subnet_id = yandex_vpc_subnet.k8s_subnet.id
-    nat       = true
-    security_group_ids = [yandex_vpc_security_group.worker_node_sg.id]
+    nat       = false
+    #security_group_ids = [yandex_vpc_security_group.worker_sg.id]
   }
 
   metadata = {
     ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
+    user-data = "#cloud-config\nhostname: worker${count.index}"
   }
 }
 

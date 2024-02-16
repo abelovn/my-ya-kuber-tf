@@ -1,13 +1,13 @@
 ---
-- name: Install and configure control-plane, worker-nodes
+- name: Install and configure master, workers
   hosts: all
   become: true
 
   vars:
-    control_plane_packages:
+    master_packages:
     - wget
     - curl
-    worker_node_packages:
+    worker_packages:
     - curl 
 
 
@@ -21,10 +21,10 @@
     when: ansible_distribution == 'Ubuntu'
 
   - name: Install and configure Control-plane
-    include_tasks: "control_plane.yaml"
-    when: inventory_hostname in groups["control_plane"]
+    include_tasks: "master.yaml"
+    when: inventory_hostname in groups["masters"]
 
   - name: Install and configure Worker-node
-    include_tasks: "worker_node.yaml"
-    when: inventory_hostname in groups["worker_node"]
+    include_tasks: "worker.yaml"
+    when: inventory_hostname in groups["workers"]
 

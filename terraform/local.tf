@@ -3,13 +3,13 @@ resource "local_file" "ansible_inventory" {
   file_permission = 0644
   content = templatefile("./inventory.tftpl",
     {
-      control_plane_nat_ip_address_list = yandex_compute_instance.control_plane[*].network_interface[0].nat_ip_address
-      control_plane_ip_address_list     = yandex_compute_instance.control_plane[*].network_interface[0].ip_address
-      control_plane_vm_names            = yandex_compute_instance.control_plane[*].name
+      master_nat_ip_address_list = yandex_compute_instance.master[*].network_interface[0].nat_ip_address
+      master_ip_address_list     = yandex_compute_instance.master[*].network_interface[0].ip_address
+      master_vm_names            = yandex_compute_instance.master[*].name
 	  
 	  
-      worker_node_ip_address_list     = yandex_compute_instance.worker_node[*].network_interface[0].ip_address
-      worker_node_vm_names            = yandex_compute_instance.worker_node[*].name
+      worker_ip_address_list     = yandex_compute_instance.worker[*].network_interface[0].ip_address
+      worker_vm_names            = yandex_compute_instance.worker[*].name
 	  
     }
   )
@@ -20,7 +20,7 @@ resource "local_file" "ansible_config" {
   file_permission = 0644
   content = templatefile("./ansible.cfg.tftpl",
     {
-      control_plane_nat_ip_address = yandex_compute_instance.control_plane.network_interface[0].nat_ip_address
+      master_nat_ip_address = yandex_compute_instance.master.network_interface[0].nat_ip_address
     }
   )
 }
