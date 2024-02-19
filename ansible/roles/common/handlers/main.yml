@@ -1,0 +1,7 @@
+---
+# handlers file for roles/common
+- name: restart containerd
+  ansible.builtin.systemd:
+    name: containerd
+    state: restarted
+    enabled: yes

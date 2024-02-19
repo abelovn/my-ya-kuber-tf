@@ -1,0 +1,29 @@
+- name: Hello there from worker
+  ansible.builtin.command:
+    cmd: echo "Hello from worker"
+
+- name: Join worker nodes to the cluster
+  become: yes
+  command: "{{ hostvars[groups['masters'][0]]['join_command'].stdout }}"
+  when: inventory_hostname in groups['workers']
+
+#- name: Create .kube directory in ubuntu user's home                                                                                       
+#  file:                                                                                                                                    
+#    path: "/home/ubuntu/.kube"                                                                                                             
+#    state: directory                                                                                                                       
+#    mode: '0755'                                                                                                                           
+#  become: yes                                                                                                                              
+#                                                                                                                                           
+#- name: Copy admin.conf to ubuntu user's .kube/config                                                                                      
+#  copy:                                                                                                                                    
+#    src: "/etc/kubernetes/admin.conf"                                                                                                      
+#    dest: "/home/ubuntu/.kube/config"                                                                                                      
+#    remote_src: yes                                                                                                                        
+#    owner: "ubuntu"                                                                                                                        
+#    group: "ubuntu"                                                                                                                        
+#    mode: '0644'                                                                                                                           
+#  become: yes                                                                                                                              
+#                                                                                                                                           
+
+
+

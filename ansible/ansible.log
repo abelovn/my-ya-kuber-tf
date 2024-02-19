@@ -1,0 +1,231 @@
+
+PLAY [Install and configure Kubernetes cluster] ********************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [master]
+ok: [worker-1]
+ok: [worker-0]
+
+TASK [common : Disable auto updates on Ubuntu] *********************************
+changed: [worker-0]
+changed: [worker-1]
+changed: [master]
+
+TASK [common : Set hostname] ***************************************************
+changed: [worker-1]
+changed: [worker-0]
+ok: [master]
+
+TASK [common : Disable swap] ***************************************************
+changed: [master]
+changed: [worker-0]
+changed: [worker-1]
+
+TASK [common : Populate and deploy /etc/hosts] *********************************
+changed: [master]
+changed: [worker-0]
+changed: [worker-1]
+
+TASK [common : Configure kernel modules and sysctl for Kubernetes] *************
+changed: [master]
+changed: [worker-1]
+changed: [worker-0]
+
+TASK [common : Install containerd] *********************************************
+changed: [worker-1]
+changed: [worker-0]
+changed: [master]
+
+TASK [common : Ensure containerd configuration directory exists] ***************
+changed: [worker-0]
+changed: [master]
+changed: [worker-1]
+
+TASK [common : Configure containerd] *******************************************
+changed: [worker-1]
+changed: [worker-0]
+changed: [master]
+
+TASK [common : Ensure containerd is restarted and enabled] *********************
+changed: [worker-1]
+changed: [worker-0]
+changed: [master]
+
+TASK [common : Verify kernel modules are loaded] *******************************
+ok: [worker-0]
+ok: [worker-1]
+ok: [master]
+
+TASK [common : Check br_netfilter module] **************************************
+ok: [master] => {
+    "changed": false,
+    "msg": "The br_netfilter module is loaded successfully"
+}
+ok: [worker-0] => {
+    "changed": false,
+    "msg": "The br_netfilter module is loaded successfully"
+}
+ok: [worker-1] => {
+    "changed": false,
+    "msg": "The br_netfilter module is loaded successfully"
+}
+
+TASK [common : Check overlay module] *******************************************
+ok: [master] => {
+    "changed": false,
+    "msg": "The overlay module is loaded successfully"
+}
+ok: [worker-0] => {
+    "changed": false,
+    "msg": "The overlay module is loaded successfully"
+}
+ok: [worker-1] => {
+    "changed": false,
+    "msg": "The overlay module is loaded successfully"
+}
+
+TASK [common : Verify sysctl parameters] ***************************************
+ok: [worker-0]
+ok: [master]
+ok: [worker-1]
+
+TASK [common : Check sysctl parameters are set correctly] **********************
+ok: [master] => {
+    "changed": false,
+    "msg": "Sysctl parameters are set correctly"
+}
+ok: [worker-0] => {
+    "changed": false,
+    "msg": "Sysctl parameters are set correctly"
+}
+ok: [worker-1] => {
+    "changed": false,
+    "msg": "Sysctl parameters are set correctly"
+}
+
+TASK [common : Update the apt package index] ***********************************
+changed: [worker-1]
+changed: [worker-0]
+changed: [master]
+
+TASK [common : Install required packages] **************************************
+changed: [worker-1]
+changed: [worker-0]
+changed: [master]
+
+TASK [common : Ensure /etc/apt/keyrings directory exists] **********************
+ok: [master]
+ok: [worker-1]
+ok: [worker-0]
+
+TASK [common : Add Kubernetes repository GPG key] ******************************
+changed: [worker-0]
+changed: [master]
+changed: [worker-1]
+
+TASK [common : Add the Kubernetes apt repository] ******************************
+changed: [worker-1]
+changed: [master]
+changed: [worker-0]
+
+TASK [common : Update apt package index with the new repository] ***************
+changed: [worker-1]
+changed: [master]
+changed: [worker-0]
+
+TASK [common : Install kubelet, kubeadm, and kubectl] **************************
+changed: [worker-0]
+changed: [worker-1]
+changed: [master]
+
+TASK [common : Pin kubelet, kubeadm, and kubectl to prevent automatic updating] ***
+ok: [worker-1] => (item=kubelet)
+ok: [master] => (item=kubelet)
+ok: [worker-0] => (item=kubelet)
+ok: [worker-1] => (item=kubeadm)
+ok: [master] => (item=kubeadm)
+ok: [worker-0] => (item=kubeadm)
+ok: [worker-1] => (item=kubectl)
+ok: [master] => (item=kubectl)
+ok: [worker-0] => (item=kubectl)
+
+TASK [common : Configure systemd as cgroup driver for kubelet] *****************
+changed: [worker-0]
+changed: [worker-1]
+changed: [master]
+
+TASK [common : Check if SystemdCgroup setting exists] **************************
+ok: [master]
+ok: [worker-0]
+ok: [worker-1]
+
+TASK [common : Replace containerd configuration with a specific setting] *******
+changed: [master]
+changed: [worker-1]
+changed: [worker-0]
+
+TASK [common : Restart containerd to apply new configuration] ******************
+changed: [worker-1]
+changed: [master]
+changed: [worker-0]
+
+TASK [common : Verify kubelet cgroup driver configuration] *********************
+changed: [master]
+changed: [worker-1]
+changed: [worker-0]
+
+TASK [common : Verify containerd cgroup driver configuration] ******************
+changed: [master]
+changed: [worker-1]
+changed: [worker-0]
+
+TASK [master : Initialize Kubernetes cluster with kubeadm] *********************
+skipping: [worker-0]
+skipping: [worker-1]
+changed: [master]
+
+TASK [master : Create .kube directory in ubuntu user's home] *******************
+skipping: [worker-0]
+skipping: [worker-1]
+changed: [master]
+
+TASK [master : Copy admin.conf to ubuntu user's .kube/config] ******************
+skipping: [worker-0]
+skipping: [worker-1]
+changed: [master]
+
+TASK [master : Apply Flannel CNI plugin] ***************************************
+skipping: [worker-0]
+skipping: [worker-1]
+changed: [master]
+
+TASK [master : Check Kubernetes cluster status] ********************************
+skipping: [worker-0]
+skipping: [worker-1]
+ok: [master]
+
+TASK [master : Get kubeadm join command] ***************************************
+skipping: [worker-1]
+skipping: [worker-0]
+changed: [master]
+
+TASK [worker : Hello there from worker] ****************************************
+skipping: [master]
+changed: [worker-1]
+changed: [worker-0]
+
+TASK [worker : Join worker nodes to the cluster] *******************************
+skipping: [master]
+changed: [worker-0]
+changed: [worker-1]
+
+TASK [Hello from entry point task] *********************************************
+changed: [worker-1]
+changed: [worker-0]
+changed: [master]
+
+PLAY RECAP *********************************************************************
+master                     : ok=36   changed=25   unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+worker-0                   : ok=32   changed=23   unreachable=0    failed=0    skipped=6    rescued=0    ignored=0   
+worker-1                   : ok=32   changed=23   unreachable=0    failed=0    skipped=6    rescued=0    ignored=0   
+

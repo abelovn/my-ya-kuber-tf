@@ -1,0 +1,48 @@
+- name: Initialize Kubernetes cluster with kubeadm
+  become: yes
+  command: kubeadm init --pod-network-cidr=10.244.0.0/16
+  when: inventory_hostname in groups['masters']
+
+
+- name: Create .kube directory in ubuntu user's home
+  file:
+    path: "/home/ubuntu/.kube"
+    state: directory
+    mode: '0755'
+  become: yes
+
+- name: Copy admin.conf to ubuntu user's .kube/config
+  copy:
+    src: "/etc/kubernetes/admin.conf"
+    dest: "/home/ubuntu/.kube/config"
+    remote_src: yes
+    owner: "ubuntu"
+    group: "ubuntu"
+    mode: '0644'
+  become: yes
+
+- name: Apply Flannel CNI plugin
+  ansible.builtin.command:
+    cmd: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+  environment:
+    HOME: "/home/ubuntu"
+    KUBECONFIG: "/home/ubuntu/.kube/config"
+  become: yes
+  become_user: ubuntu
+
+
+- name: Check Kubernetes cluster status
+  become: no
+  command: kubectl cluster-info
+  register: cluster_status
+  changed_when: false
+  failed_when: "'Kubernetes control plane' not in cluster_status.stdout"
+  delegate_to: "{{ inventory_hostname }}"
+  when: inventory_hostname in groups['masters']
+
+- name: Get kubeadm join command
+  become: yes
+  shell: kubeadm token create --print-join-command
+  register: join_command
+  when: inventory_hostname in groups['masters']
+
